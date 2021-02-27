@@ -1,0 +1,4 @@
+---
+- import_tasks: addRepo.yml 
+- import_tasks: deployNginx.yml
+- import_tasks: checkStatus.yml

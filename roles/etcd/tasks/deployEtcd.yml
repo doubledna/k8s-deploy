@@ -1,0 +1,26 @@
+--- 
+- name: Ensure etcd is stoped before delete etcd data directories
+  shell: |
+    if [ -f /etc/systemd/system/etcd.service ]; then systemctl stop etcd; fi
+
+- name: Delete etcd data directories
+  file:
+    path: "{{ item }}"
+    state: "absent"
+  with_items:
+    - "{{ ETCD_BASE_DIR }}/member"
+    - "{{ ETCD_BASE_DIR }}/data"
+    - "{{ ETCD_BASE_DIR }}/wal"
+
+- name:  Create etcd systemd file
+  template:
+    src: "etcd.service.j2"
+    dest: "/etc/systemd/system/etcd.service"
+    mode: 0644
+
+- name: Systemctl start etcd
+  systemd:
+    name: etcd
+    state: restarted
+    enabled: yes
+    daemon-reload: yes

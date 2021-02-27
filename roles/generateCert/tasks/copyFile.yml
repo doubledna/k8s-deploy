@@ -1,0 +1,12 @@
+- name: Copy cfssl,cfssljson,cfssl-certinfo to ONCE_HOST
+  copy:
+    src: "files/{{ item }}"
+    dest: "{{ BIN_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 755
+  with_items:
+    - "cfssl"
+    - "cfssljson"
+    - "cfssl-certinfo"
+  when: inventory_hostname == ONCE_HOST

@@ -1,0 +1,38 @@
+---
+- name: Check flanneld status
+  shell: |
+      "{{ BIN_PATH }}"etcdctl \
+      --endpoints={{ ETCD_ENDPOINTS }}  \
+      --ca-file=/etc/kubernetes/cert/ca.pem \
+      --cert-file=/etc/flanneld/cert/flanneld.pem \
+      --key-file=/etc/flanneld/cert/flanneld-key.pem \
+      get "{{ FLANNEL_SUBNETS_PREFIX }}"/config
+  register: result
+  when: inventory_hostname == REGISTERED_FLANNEL
+
+- name: Show flanneld status info
+  debug: 
+    var: result.stdout
+    verbosity: 0
+  when: inventory_hostname == REGISTERED_FLANNEL
+
+- name: Check flanneld cluster status
+  shell: |
+      "{{ BIN_PATH }}"etcdctl \
+      --endpoints={{ ETCD_ENDPOINTS }}  \
+      --ca-file=/etc/kubernetes/cert/ca.pem \
+      --cert-file=/etc/flanneld/cert/flanneld.pem \
+      --key-file=/etc/flanneld/cert/flanneld-key.pem \
+      ls "{{ FLANNEL_SUBNETS_PREFIX }}"/subnets
+  register: result
+  when: inventory_hostname == REGISTERED_FLANNEL
+
+- name: show flanneld status info
+  debug: 
+    var: result.stdout 
+    verbosity: 0
+  when: inventory_hostname == REGISTERED_FLANNEL
+
+- name: Output messge
+  debug:
+    msg: "FLANNELD集群创建完成，服务正常......"

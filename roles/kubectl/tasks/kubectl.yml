@@ -1,0 +1,72 @@
+---
+- name: Copy admin certs and admin-csr.json to ONCE_HOST
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "/etc/kubernetes/cert/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "admin.pem"
+    - "admin-key.pem"
+    - "admin-csr.json"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Create kubectl config script
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ KEY_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0755
+  with_items:
+    - "kubectl-config.sh"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Exec script create config file
+  script: "{{ KEY_PATH }}{{ item }}"
+  with_items:
+    - "kubectl-config.sh"
+  args:
+    chdir: "{{ KEY_PATH }}"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Set kubectl.kubeconfig to mode 0755
+  file:
+    path: "{{ KEY_PATH }}"
+    mode: 0755
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    recurse: yes
+
+- name: Copy kubectl.kubeconfig to {{ ROOT_CONFIG_PATH }}
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "{{ ROOT_CONFIG_PATH }}config"
+  with_items:
+    - "kubectl.kubeconfig"
+ 
+- name: Chmod 0644 {{ ROOT_CONFIG_PATH }}
+  file:
+    path: "{{ ROOT_CONFIG_PATH }}config"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+
+- name: Copy kubectl.kubeconfig to {{ USER_CONFIG_PATH }}
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "{{ USER_CONFIG_PATH }}config"
+  with_items:
+    - "kubectl.kubeconfig"
+
+- name: Chmod 0644 {{ USER_CONFIG_PATH }}
+  file:
+    path: "{{ USER_CONFIG_PATH }}config"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+
+- name: Output message
+  debug:
+    msg: "kubectl安装完成......"

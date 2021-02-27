@@ -1,0 +1,33 @@
+---
+- name: Copy etcd-csr.json to ONCE_HOST
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ KEY_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "etcd-csr.json"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Generate etcd cert
+  shell: '{{ BIN_PATH }}cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes "{{ item }}-csr.json" | {{ BIN_PATH }}cfssljson -bare "{{ item }}"'
+  args:
+    chdir: "{{ KEY_PATH }}"
+  with_items:
+    - "etcd"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Set etcd certs to mode 0755
+  file:
+    path: "{{ KEY_PATH }}"
+    mode: 0755
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    recurse: yes
+  when: inventory_hostname == ONCE_HOST
+
+- name: Output message
+  debug:
+    msg: "ETCD证书创建完成......"
+  when: inventory_hostname == ONCE_HOST

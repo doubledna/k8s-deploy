@@ -1,0 +1,34 @@
+{
+  "CN": "kubernetes",
+  "hosts": [
+    "127.0.0.1",
+    "{{ CLUSTER_API_SVC_IP }}",
+    "kubernetes",
+    "kubernetes.default",
+    "kubernetes.default.svc",
+    "kubernetes.default.svc.cluster",
+    "kubernetes.default.svc.cluster.local",
+    "kubernetes.default.svc.{{ CLUSTER_DNS_DOMAIN }}",
+    {% for ip in MASTER_HOSTS %}
+        {% if loop.index != loop.length %}
+            "{{ ip }}",
+        {% else %}
+            "{{ ip }}"
+        {% endif %}
+    {% endfor %}
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "CN",
+      "ST": "BeiJing",
+      "L": "BeiJing",
+      "O": "k8s",
+      "OU": "dev"
+    }
+  ]
+}
+

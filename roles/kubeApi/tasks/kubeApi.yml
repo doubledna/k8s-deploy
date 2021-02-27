@@ -1,0 +1,59 @@
+---
+- name: Copy etcd certs to etcd cluster
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "/etc/etcd/cert/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "etcd.pem"
+    - "etcd-key.pem"
+
+- name: Copy audit certs to api cluster
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "/etc/kubernetes/cert/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "proxy-client.pem"
+    - "proxy-client-key.pem"
+
+- name: Create encrypt config 
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/kubernetes/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "encryption-config.yaml"
+
+- name: Copy audit-policy.yaml
+  template:
+    src: "{{ item }}"
+    dest: "/etc/kubernetes/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "audit-policy.yaml"
+
+- name: Create kube-apiserver service file
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "kube-apiserver.service"
+
+- name: Start kube-apiserver
+  systemd: 
+    name: kube-apiserver
+    state: restarted
+    enabled: yes
+    daemon-reload: yes

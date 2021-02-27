@@ -1,0 +1,6 @@
+---
+- hosts: "node"
+  become: True
+  gather_facts: True
+  roles:
+    - "autoCsr"

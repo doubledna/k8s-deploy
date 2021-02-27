@@ -1,0 +1,7 @@
+#!/bin/bash
+for csr in `{{ BIN_PATH }}kubectl get csr | grep "system" | awk '{print $1}'`
+do
+  {{ BIN_PATH }}kubectl certificate approve ${csr}
+  sleep 5
+done
+

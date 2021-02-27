@@ -1,0 +1,36 @@
+---
+- name: Copy kubelet bootstrap config
+  copy:
+    src: "{{ KEY_PATH }}kubelet-bootstrap-{{ inventory_hostname }}.kubeconfig"
+    dest: "/etc/kubernetes/kubelet-bootstrap.kubeconfig"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+
+- name: Create kubelet config
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/kubernetes/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    #- "kubelet.config.json"
+    - "kubelet-config.yaml"
+
+- name: Craete kubelet service file
+  template:
+    src: "kubelet.service.j2"
+    dest: "/etc/systemd/system/kubelet.service"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+
+- name: Start kubelet
+  systemd:
+    name: "kubelet"
+    state: restarted
+    enabled: yes
+    daemon-reload: yes
+
+

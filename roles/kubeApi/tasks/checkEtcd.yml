@@ -1,0 +1,18 @@
+---
+- name: Query information about kube-apiserver in etcd  
+  shell: |
+      ETCDCTL_API=3 {{ BIN_PATH }}etcdctl \
+        --endpoints={{ ETCD_ENDPOINTS }} \
+        --cacert=/etc/kubernetes/cert/ca.pem \
+        --cert=/etc/etcd/cert/etcd.pem \  
+        --key=/etc/etcd/cert/etcd-key.pem \
+        get /registry --prefix --keys-only
+  register: result
+  ignore_errors: yes
+  when: inventory_hostname == ONCE_HOST
+
+- name: show kube-apiserver in etcd info
+  debug: 
+    var: result.stdout
+    verbosity: 0
+  when: inventory_hostname == ONCE_HOST

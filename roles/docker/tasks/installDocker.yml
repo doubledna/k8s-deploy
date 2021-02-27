@@ -1,0 +1,38 @@
+---
+- name: Install docker
+  yum:
+    name: "{{ item }}" 
+    state: present
+    update_cache: yes
+  with_items:
+    - "{{ DOCKER_VERSION }}"
+
+- name: Configure docker registr 
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/docker/daemon.json"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "daemon.json"
+
+- name: Add user {{ CURRENT_USER }} to docker group
+  command: "usermod -aG docker {{ CURRENT_USER }}"
+
+- name: Copy docker service file
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "docker.service"
+
+- name: Start docker
+  systemd:
+    daemon_reload: yes
+    name: docker
+    state: started
+    enabled: yes

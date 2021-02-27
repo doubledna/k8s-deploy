@@ -1,0 +1,4 @@
+---
+- import_tasks: copyFile.yml
+- import_tasks: kubeScheduler.yml
+- import_tasks: checkStatus.yml

@@ -1,0 +1,13 @@
+---
+- name: Deploy flanneld systemd file
+  template:
+    src: "flanneld.service.j2"
+    dest: "/etc/systemd/system/flanneld.service"
+    mode: 0644
+
+- name: Start flanneld
+  systemd:
+    name: flanneld
+    state: restarted
+    enabled: yes
+    daemon-reload: yes

@@ -1,0 +1,23 @@
+---
+- name: Prepare yum source
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "yum-utils"
+    - "device-mapper-persistent-data"
+    - "lvm2"
+
+- name: Add Aliyun Docker source when in china
+  shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo  
+  when: IN_CHINA
+
+- name: add Overseas Docker source not in china
+  copy:
+    src: "files/docker-ce-hw.repo"
+    dest: "/etc/yum.repos.d/docker-ce.repo"
+    owner: root
+    group: root
+    backup: yes
+  when: not IN_CHINA
+ 

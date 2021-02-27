@@ -1,0 +1,3 @@
+---
+- import_tasks: copyFile.yml
+- import_tasks: kubectl.yml 

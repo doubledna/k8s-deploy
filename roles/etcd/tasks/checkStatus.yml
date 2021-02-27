@@ -1,0 +1,37 @@
+---
+- name: Sleep 1 seconds
+  shell: "sleep 1"
+
+- name: Check etcd nodes status is health
+  shell: |
+      ETCDCTL_API=3 {{ BIN_PATH }}etcdctl \
+      --endpoints=https://{{ ansible_default_ipv4.address }}:2379  \
+      --cacert=/etc/kubernetes/cert/ca.pem \
+      --cert=/etc/etcd/cert/etcd.pem \
+      --key=/etc/etcd/cert/etcd-key.pem \
+      endpoint health
+  register: result
+
+- name: Show etcd status
+  debug: 
+    var: result.stderr_lines
+    verbosity: 0
+
+- name: Check etcd cluster's status 
+  shell: |
+      ETCDCTL_API=3 {{ BIN_PATH }}etcdctl -w table \
+      --endpoints={{ ETCD_ENDPOINTS }}  \
+      --cacert=/etc/kubernetes/cert/ca.pem \
+      --cert=/etc/etcd/cert/etcd.pem \
+      --key=/etc/etcd/cert/etcd-key.pem \
+      endpoint status
+  register: result
+
+- name: Show etcd status
+  debug: 
+    var: result.stdout
+    verbosity: 0
+
+- name: Output message
+  debug:
+    msg: "ETCD集群创建完成，服务正常......"

@@ -1,0 +1,17 @@
+---
+- import_tasks: copyFile.yml
+  when: function == 'addCluster'
+- import_tasks: keyCa.yml
+- import_tasks: keyAdmin.yml
+  when: function == 'addCluster'
+- import_tasks: keyEtcd.yml
+  when: function == 'addCluster'
+- import_tasks: keyFlannel.yml
+  when: function == 'addCluster'
+- import_tasks: keyKubeApi.yml
+- import_tasks: keyProxyClient.yml
+  when: function == 'addCluster'
+- import_tasks: keyKubeController.yml
+- import_tasks: keyKubeScheduler.yml
+- import_tasks: keyKubeProxy.yml
+  when: function == 'addCluster'

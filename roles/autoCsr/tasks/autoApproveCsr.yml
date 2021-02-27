@@ -1,0 +1,33 @@
+---
+- name: Create approve server cert csr script
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ KEY_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0755
+  with_items:
+    - "server-cert-csr.sh"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Approve server cert csr
+  shell: "{{ KEY_PATH }}server-cert-csr.sh"
+  args:
+    chdir: "{{ KEY_PATH }}"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Check all csr is Approved
+  shell: "{{ BIN_PATH }}kubectl get csr | grep -v 'Approved'"
+  register: result
+  when: inventory_hostname == ONCE_HOST
+
+- name: Ensure all csr is Approved
+  debug: 
+    var: result.stdout
+    verbosity: 0
+  when: inventory_hostname == ONCE_HOST
+
+- name: Output message
+  debug:
+    msg: "自动CSR完成......"
+  when: inventory_hostname == ONCE_HOST

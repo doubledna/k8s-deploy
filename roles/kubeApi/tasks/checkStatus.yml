@@ -1,0 +1,14 @@
+---
+- name: Sleep 1 seconds
+  shell: "sleep 1"
+
+- name: check kube-apiserver status
+  shell: "systemctl status kube-apiserver | grep Active"
+  register: result
+  become_user: root
+  ignore_errors: yes
+ 
+- name: show kube-apiserver status
+  debug: 
+    var: result.stdout
+    verbosity: 0

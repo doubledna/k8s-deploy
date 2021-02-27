@@ -1,0 +1,5 @@
+---
+- name: delete nginx-ds.yml
+  shell: "{{ BIN_PATH }}kubectl delete -f {{ KEY_PATH }}test-nginx.yml"
+  when: inventory_hostname == ONCE_HOST
+  ignore_errors: yes

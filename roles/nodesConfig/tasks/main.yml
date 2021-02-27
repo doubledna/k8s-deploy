@@ -1,0 +1,7 @@
+---
+- import_tasks: kubelet.yml
+- import_tasks: createKubeletBS.yml
+  when: function == "addCluster"
+- import_tasks: kubeProxy.yml
+  when: function == "addCluster"
+ 

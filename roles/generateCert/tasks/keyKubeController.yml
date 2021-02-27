@@ -1,0 +1,44 @@
+---
+- name: Copy kube-controller-manager-csr.json to ONCE_HOST
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ KEY_PATH }}/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "kube-controller-manager-csr.json"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Create kube-controller-manager cert
+  shell: '{{ BIN_PATH }}cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes "{{ item }}-csr.json" | {{ BIN_PATH }}cfssljson -bare "{{ item }}"'
+  args:
+    chdir: "{{ KEY_PATH }}"
+  with_items:
+    - "kube-controller-manager"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Set kube-controller to mode 0755
+  file:
+    path: "{{ KEY_PATH }}"
+    mode: 0755
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    recurse: yes
+  when: inventory_hostname == ONCE_HOST
+
+- name: Copy kube-controller-manager certs to kube-controller cluster
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "/etc/kubernetes/cert/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "kube-controller-manager.pem"
+    - "kube-controller-manager-key.pem"
+
+- name: Output message
+  debug:
+    msg: "Kube-controller-manager证书创建完成......"
+  when: inventory_hostname == ONCE_HOST

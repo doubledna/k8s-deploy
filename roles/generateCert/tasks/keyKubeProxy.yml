@@ -1,0 +1,33 @@
+---
+- name: Copy kube-proxy-csr.json to ONCE_HOST
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ KEY_PATH }}/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "kube-proxy-csr.json"
+  when: inventory_hostname == ONCE_HOST
+
+- name: create kube-proxy cert
+  shell: '{{ BIN_PATH }}cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes "{{ item }}-csr.json" | {{ BIN_PATH }}cfssljson -bare "{{ item }}"'
+  args:
+    chdir: "{{ KEY_PATH }}"
+  with_items:
+    - "kube-proxy"
+  when: inventory_hostname == ONCE_HOST
+
+- name: set kube-proxy.key to 0775 mode
+  file:
+    path: "{{ KEY_PATH }}"
+    mode: 0755
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    recurse: yes
+  when: inventory_hostname == ONCE_HOST
+
+- name: Output message
+  debug:   
+    msg: "kube-proxy证书创建完成......"
+  when: inventory_hostname == ONCE_HOST

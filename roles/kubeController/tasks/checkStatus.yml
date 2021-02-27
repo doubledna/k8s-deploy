@@ -1,0 +1,27 @@
+---
+- name: Sleep 2 seconds
+  shell: "sleep 2"
+
+- name: Check kube-controller status
+  shell: systemctl status kube-controller-manager | grep Active
+  register: result
+ 
+- name: show kube-controller status
+  debug: 
+    var: result.stdout 
+    verbosity: 0
+
+- name: Check kube-controller leader info in cluster
+  shell:  "{{ BIN_PATH }}kubectl get endpoints kube-controller-manager --namespace=kube-system -o yaml"
+  register: result
+  when: inventory_hostname == ONCE_HOST
+
+- name: show kube-controller leader info
+  debug: 
+    var: result.stdout 
+    verbosity: 0
+  when: inventory_hostname == ONCE_HOST
+  
+- name: Output message
+  debug:
+    msg: "kube-controller-manager安装完成......"

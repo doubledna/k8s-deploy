@@ -1,0 +1,45 @@
+---
+- name: Check nodes status
+  shell: "{{ BIN_PATH }}kubectl get nodes"
+  when: inventory_hostname == ONCE_HOST
+  register: result
+
+- name: Show nodes info
+  debug: 
+    var: result.stdout
+    verbosity: 0
+  when: inventory_hostname == ONCE_HOST
+
+- name: Check  kubelet-api-admin grant kubelet to access all api
+  shell: "{{ BIN_PATH }}kubectl describe clusterrole system:kubelet-api-admin"
+  when: inventory_hostname == ONCE_HOST
+  register: result
+
+- name: Show nodes info
+  debug: 
+    var: result.stdout
+    verbosity: 0
+  when: inventory_hostname == ONCE_HOST
+
+# test k8s cluster function
+- name: copy test-nginx.yml file
+  template:
+    src: "test-nginx.yml" 
+    dest: "{{ KEY_PATH }}test-nginx.yml" 
+    owner: test
+    group: test
+    mode: 0644
+  when: inventory_hostname == ONCE_HOST
+
+- name: exec test-nginx.yml
+  shell: "{{ BIN_PATH }}kubectl create -f {{ KEY_PATH }}test-nginx.yml"
+  when: inventory_hostname == ONCE_HOST
+
+- name: check test-nginx.yml
+  shell: "{{ BIN_PATH }}kubectl get pods -o wide"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Output message
+  debug:
+    msg: "部署测试nginx应用完成......"
+  when: inventory_hostname == ONCE_HOST

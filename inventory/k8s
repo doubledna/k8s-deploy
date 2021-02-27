@@ -1,0 +1,24 @@
+[cluster]
+kube-node1  ansible_ssh_host=10.0.0.2
+kube-node2  ansible_ssh_host=10.0.0.245
+kube-node3  ansible_ssh_host=10.0.0.246
+
+[master]
+kube-node1
+
+
+[nodes]
+kube-node2
+
+
+[docker]
+kube-node2
+
+[flannel]
+kube-node2
+
+[etcd]
+kube-node3
+
+[nginx]
+kube-node1

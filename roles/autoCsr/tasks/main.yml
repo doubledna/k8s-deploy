@@ -1,0 +1,4 @@
+---
+- import_tasks: csrCrb.yml
+  when: function == "addCluster"
+- import_tasks: autoApproveCsr.yml

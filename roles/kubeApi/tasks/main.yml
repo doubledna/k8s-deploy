@@ -1,0 +1,8 @@
+---
+- import_tasks: copyFile.yml
+- import_tasks: kubeApi.yml
+- import_tasks: checkStatus.yml
+- import_tasks: checkEtcd.yml
+- import_tasks: accessKubelet.yml
+  when: function == "addCluster"
+

@@ -1,0 +1,16 @@
+---
+- name: Set time zone
+  shell: timedatectl set-timezone Asia/Shanghai
+
+- name: Set UTC
+  shell: timedatectl set-local-rtc 0
+
+- name: Restart rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted
+
+- name: Restart crond
+  systemd:
+    name: crond
+    state: restarted

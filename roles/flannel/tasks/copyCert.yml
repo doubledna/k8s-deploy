@@ -1,0 +1,11 @@
+---
+- name: Copy flannel cert to flannel cluster
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "/etc/flanneld/cert/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "flanneld.pem"
+    - "flanneld-key.pem"

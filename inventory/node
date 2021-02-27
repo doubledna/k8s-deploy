@@ -1,0 +1,13 @@
+[node]
+kube-node1  ansible_ssh_host=10.0.0.2
+kube-node4  ansible_ssh_host=10.0.0.248
+
+[nodes]
+kube-node4
+
+[docker]
+kube-node4
+
+[flannel]
+kube-node4
+

@@ -1,0 +1,10 @@
+---
+- name: Write pod network info into etcd cluster
+  shell: |
+      "{{ BIN_PATH }}"etcdctl \
+      --endpoints={{ ETCD_ENDPOINTS }}  \
+      --ca-file=/etc/kubernetes/cert/ca.pem \
+      --cert-file=/etc/flanneld/cert/flanneld.pem \
+      --key-file=/etc/flanneld/cert/flanneld-key.pem \
+      set "{{ FLANNEL_SUBNETS_PREFIX }}"/config '{"Network": "'{{ FLANNEL_SUBNETS }}'", "SubnetLen": 24, "Backend": {"Type": "vxlan"}}'
+  when: inventory_hostname == REGISTERED_FLANNEL

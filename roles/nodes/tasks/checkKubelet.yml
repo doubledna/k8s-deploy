@@ -1,0 +1,13 @@
+---
+- name: check kubelet status
+  shell: systemctl status kubelet | grep Active
+  register: result
+
+- name: show kubelet status 
+  debug: 
+    var: result.stdout
+    verbosity: 0
+
+- name: Output message
+  debug:
+    msg: "kublet安装完成......"

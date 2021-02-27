@@ -1,0 +1,18 @@
+---
+- name: Check nginx status
+  systemd:
+    name: nginx
+    state: started
+
+- name: Check proxy port
+  shell: netstat -tunlp | grep "7443"
+  register: result
+
+- name: Show nginx status
+  debug: 
+    var: result.stdout
+    verbosity: 0
+   
+- name: Output messgae
+  debug:
+    msg: "kube-nginx安装成功......"

@@ -1,0 +1,27 @@
+---
+- name: Create script to generate bootstarp config
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ KEY_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0755
+  with_items:
+    - "kube-bootstrap-config.sh"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Exec bootstrap script generate config
+  script: "{{ KEY_PATH }}kube-bootstrap-config.sh"
+  args:
+    chdir: "{{ KEY_PATH }}"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Chmod 0644 kube-bootstrap-kube-node.kubeconfig
+  file:
+    path: "{{ KEY_PATH }}kubelet-bootstrap-{{ item }}.kubeconfig"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items: "{{ NODE_NAME_LIST }}"
+  when: inventory_hostname == ONCE_HOST
+

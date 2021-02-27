@@ -1,0 +1,27 @@
+---
+- name: Sleep 2 seconds
+  shell: "sleep 2"
+  
+- name: Check kube-scheduler status
+  shell: systemctl status kube-scheduler | grep Active 
+  register: result
+
+- name: show kube-scheduler status
+  debug: 
+    var: result.stdout
+    verbosity: 0
+
+- name: Check kube-scheduler leader info in cluster
+  shell:  "{{ BIN_PATH }}kubectl get endpoints kube-scheduler --namespace=kube-system  -o yaml"
+  register: result
+  when: inventory_hostname == ONCE_HOST
+
+- name: show kube-scheduler leader info
+  debug: 
+    var: result.stdout 
+    verbosity: 0
+  when: inventory_hostname == ONCE_HOST
+
+- name: Output message
+  debug:
+    msg: "kube-scheduler安装完成......"

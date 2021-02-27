@@ -1,0 +1,34 @@
+[Unit]
+Description=Etcd Server
+After=network.target
+After=network-online.target
+Wants=network-online.target
+Documentation=https://github.com/coreos
+
+[Service]
+User=test
+Type=notify
+WorkingDirectory=/var/lib/etcd/
+ExecStart={{ BIN_PATH }}etcd \
+  --name={{ inventory_hostname }} \
+  --cert-file=/etc/etcd/cert/etcd.pem \
+  --key-file=/etc/etcd/cert/etcd-key.pem \
+  --peer-cert-file=/etc/etcd/cert/etcd.pem \
+  --peer-key-file=/etc/etcd/cert/etcd-key.pem \
+  --trusted-ca-file=/etc/kubernetes/cert/ca.pem \
+  --peer-trusted-ca-file=/etc/kubernetes/cert/ca.pem \
+  --initial-advertise-peer-urls=https://{{ ansible_default_ipv4.address }}:2380 \
+  --listen-peer-urls=https://{{ ansible_default_ipv4.address }}:2380 \
+  --listen-client-urls=https://{{ ansible_default_ipv4.address }}:2379,http://127.0.0.1:2379 \
+  --advertise-client-urls=https://{{ ansible_default_ipv4.address }}:2379 \
+  --initial-cluster-token=etcd-cluster-0 \
+  --initial-cluster={{ ETCD_INITIAL_CLUSTER }} \
+  --initial-cluster-state=new \
+  --data-dir={{ ETCD_BASE_DIR }}
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+

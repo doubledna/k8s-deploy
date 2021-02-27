@@ -1,0 +1,4 @@
+---
+- import_tasks: deleteTestNginx.yml
+- import_tasks: stopService.yml
+- import_tasks: deleteDir.yml 

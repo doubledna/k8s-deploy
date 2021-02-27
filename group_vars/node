@@ -1,0 +1,69 @@
+---
+# 添加node节点使用的变量
+# 执行ansible用户 #
+ansible_ssh_user: test
+CURRENT_USER: test
+
+# 组件版本 #
+K8S_VERSION: "v1.15.6"
+DNS_VERSION: "1.14.7"
+
+# 判断docker/yum源为国内还是国外 #
+IN_CHINA: "True"
+# 用于只需在一个主机上执行就ok的脚本 #
+ONCE_HOST: kube-node1
+
+
+# 搭建使用配置 #
+# master
+ENCRYPTION_KEY: "sy5iObZIMcBMceQN8sS/3rCtw41byeWvjxfIzSdIgAQ="
+CLUSTER_PORT_RANGE: "30000-39999"
+KUBE_APISERVER: "https://10.0.0.2:7443"
+
+
+# nodes
+# pause 镜像地址
+POD_INFRA_IMAGE: "gcr.azk8s.cn/google_containers/pause-amd64:3.1"
+# 用于生成kubelet bootstrap kubeconfig配置
+NODE_NAMES: kube-node4
+NODE_NAME_LIST: [kube-node4,]
+
+
+# 集群网络配置 #
+CLUSTER_IP_RANGE: "192.168.255.0/24"
+CLUSTER_API_SVC_IP: 192.168.255.1
+CLUSTER_DNS_SVC_IP: "192.168.255.2"
+CLUSTER_DNS_DOMAIN: "cluster.local."
+
+
+# 程序使用路径 #
+BIN_PATH: "/usr/local/kubernetes/bin/"
+KEY_PATH: "/data/apps/kubernetes/cert/"
+ROOT_CONFIG_PATH: "/root/.kube/"
+USER_CONFIG_PATH: "/home/test/.kube/"
+LOG_PATH: "/data/logs/kubernetes/"
+# 二进制文件存放目录
+BINARY_FILE_PATH: "/tmp/kubernetes/"
+
+
+# docker配置 #
+DOCKER_VERSION: "docker-ce-3:18.09.6-3.el7.x86_64"
+# docker数据目录
+DOCKER_DATA_ROOT: "/data/apps/docker"
+
+
+# flannel配置 #
+FLANNEL_VERSION: "v0.11.0"
+# flannel网段
+FLANNEL_SUBNETS: "192.168.0.0/17"
+# flanned注册到etcd中的位置
+FLANNEL_SUBNETS_PREFIX: "/network"
+# 只需在第一台机器上执行命令,用于flannel向etcd注册网络信息和检查flanneld状态
+REGISTERED_FLANNEL: kube-node2
+
+
+# etcd配置 #
+# etcd数据目录
+ETCD_BASE_DIR: /data/database/etcd
+# 其他组件调用etcd地址
+ETCD_ENDPOINTS: "https://10.0.0.246:2379"

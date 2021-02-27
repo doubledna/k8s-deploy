@@ -1,0 +1,22 @@
+#!/bin/bash
+
+{{ BIN_PATH }}kubectl config set-cluster kubernetes \
+  --certificate-authority=/etc/kubernetes/cert/ca.pem \
+  --embed-certs=true \
+  --server="{{ KUBE_APISERVER }}" \
+  --kubeconfig=kube-proxy.kubeconfig
+
+{{ BIN_PATH }}kubectl config set-credentials system:kube-proxy \
+  --client-certificate=kube-proxy.pem \
+  --client-key=kube-proxy-key.pem \
+  --embed-certs=true \
+  --kubeconfig=kube-proxy.kubeconfig
+
+{{ BIN_PATH }}kubectl config set-context system:kube-proxy \
+  --cluster=kubernetes \
+  --user=system:kube-proxy \
+  --kubeconfig=kube-proxy.kubeconfig
+
+{{ BIN_PATH }}kubectl config use-context system:kube-proxy --kubeconfig=kube-proxy.kubeconfig
+
+

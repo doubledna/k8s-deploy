@@ -1,0 +1,32 @@
+---
+- name: Copy kube-proxy kubeconfig
+  copy:
+    src: "{{ KEY_PATH }}kube-proxy.kubeconfig"
+    dest: "/etc/kubernetes/kube-proxy.kubeconfig"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+
+- name: Create kube-proxy.config
+  template:
+    src: "kube-proxy.config.yaml.j2"
+    dest: "/etc/kubernetes/kube-proxy.config.yaml"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+
+- name: Create kube-proxy service file
+  template:
+    src: "kube-proxy.service.j2"
+    dest: "/etc/systemd/system/kube-proxy.service"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+
+- name: Start kube-proxy service
+  systemd:
+    name: "kube-proxy"
+    state: restarted
+    enabled: yes
+    daemon-reload: yes
+

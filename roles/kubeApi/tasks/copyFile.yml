@@ -1,0 +1,12 @@
+---
+- name: Copy k8s binary
+  copy:
+    src: "{{ BINARY_FILE_PATH }}{{ item }}"
+    dest: "{{ BIN_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0755
+  with_items:
+    - "kube-apiserver"
+    - "kubeadm"
+    - "etcdctl"

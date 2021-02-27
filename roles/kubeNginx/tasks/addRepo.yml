@@ -1,0 +1,7 @@
+---
+- name: Add nginx.repo
+  copy:
+    src: "files/nginx.repo"
+    dest: "/etc/yum.repos.d/nginx.repo"
+    owner: root
+    group: root

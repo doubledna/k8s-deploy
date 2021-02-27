@@ -1,0 +1,10 @@
+---
+- name: Copy ca certs and ca-config
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "/etc/kubernetes/cert/{{ item }}"
+    owner: test
+    group: test
+    mode: 0644
+  with_items:
+    - "ca.pem"

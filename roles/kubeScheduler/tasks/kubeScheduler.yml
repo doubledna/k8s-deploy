@@ -1,0 +1,70 @@
+---
+- name: Create kube-scheduler config script
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ KEY_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "kube-scheduler-config.sh"
+  when: 
+    - inventory_hostname == ONCE_HOST
+    - function == "addCluster"
+
+- name: Exec script generate config file
+  script: "{{ KEY_PATH }}{{ item }}"
+  with_items:
+    - "kube-scheduler-config.sh"
+  args:
+    chdir: "{{ KEY_PATH }}"
+  when: 
+    - inventory_hostname == ONCE_HOST
+    - function == "addCluster"
+ 
+- name: Chmod 0644 kube-scheduler.kubeconfig
+  file:
+    path: "{{ KEY_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "kube-scheduler.kubeconfig"
+  when:
+    - inventory_hostname == ONCE_HOST
+    - function == "addCluster"
+
+- name: Copy kube-scheduler.kubeconfig
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "/etc/kubernetes/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+  with_items:
+    - "kube-scheduler.kubeconfig"
+
+- name: Copy kube-scheduler.yaml to master hosts
+  template:
+    src: "{{ item }}"
+    dest: "/etc/kubernetes/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+  with_items:
+    - "kube-scheduler.yaml"
+
+- name: Create kube-scheduler service file
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "kube-scheduler.service"
+
+- name: Start kube-scheduler
+  systemd:
+    name: "kube-scheduler"
+    state: restarted
+    enabled: yes
+    daemon-reload: yes

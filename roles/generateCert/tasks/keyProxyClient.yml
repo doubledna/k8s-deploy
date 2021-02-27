@@ -1,0 +1,33 @@
+---
+- name: Copy proxy-client-csr.json to ONCE_HOST
+  copy:
+    src: "{{ item }}"
+    dest: "{{ KEY_PATH }}/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "proxy-client-csr.json"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Generate audit policy cert 
+  shell: '{{ BIN_PATH }}cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes "{{ item }}-csr.json" | {{ BIN_PATH }}cfssljson -bare "{{ item }}"'
+  args:
+    chdir: "{{ KEY_PATH }}"
+  with_items:
+    - "proxy-client"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Set audit policy certs to 0755 mode
+  file:
+    path: "{{ KEY_PATH }}"
+    mode: 0755
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    recurse: yes
+  when: inventory_hostname == ONCE_HOST
+
+- name: Output message
+  debug:
+    msg: "访问 metrics-server 使用证书创建完成......"
+  when: inventory_hostname == ONCE_HOST

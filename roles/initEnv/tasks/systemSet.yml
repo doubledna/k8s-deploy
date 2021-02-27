@@ -1,0 +1,105 @@
+---
+- name: Clear Default Yum Repository
+  file:
+    path: "/etc/yum.repos.d"
+    state: absent
+
+- name: Create Yum Repository Dir
+  file:
+    path: "/etc/yum.repos.d"
+    state: directory
+
+- name: Add Ali Centos Yum Repository When IN_CHINA
+  copy:
+    src:  "files/{{ item }}"
+    dest: "/etc/yum.repos.d/{{ item }}"
+    owner: root
+    group: root
+    backup: yes
+  with_items:
+    - "CentOS-Base.repo"
+  when: IN_CHINA
+
+- name: Add Ali Centos Yum Repository When Not IN_CHINA
+  copy:
+    src:  "files/CentOS-Base-hw.repo"
+    dest: "/etc/yum.repos.d/CentOS-Base.repo"
+    owner: root
+    group: root
+    backup: yes
+  when: not IN_CHINA
+
+- name: Uninstall epel realease
+  yum:
+    name: ['epel-release']
+    state: absent
+
+- name: Install epel realease
+  yum:
+    name: ['epel-release']
+    state: present
+
+- name: Install dependencies
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: True
+  with_items:
+    - "conntrack"
+    - "ipvsadm"
+    - "ipset"
+    - "jq"
+    - "sysstat"
+    - "curl"
+    - "iptables"
+    - "libseccomp"
+
+- name: Load br_netfilter
+  command: modprobe br_netfilter
+
+- name: Close firewall
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: False
+  ignore_errors: yes
+
+- name: Close swap
+  command: swapoff -a
+
+- name: Set system parameters to one
+  sysctl:
+    name: "{{ item }}"
+    value: 1
+    sysctl_file: /etc/sysctl.conf
+    reload: yes
+  with_items:
+    - "net.ipv4.ip_forward"
+    - "net.bridge.bridge-nf-call-ip6tables"
+    - "net.bridge.bridge-nf-call-iptables"
+    - "net.ipv6.conf.all.disable_ipv6"
+
+- name: Set system parameters to zero
+  sysctl:
+    name: "{{ item }}"
+    value: 0
+    sysctl_file: /etc/sysctl.conf
+    reload: yes
+  with_items:
+    - "vm.swappiness"
+    - "vm.panic_on_oom"
+    - "net.ipv4.tcp_tw_recycle"
+
+- name: Close SElinux
+  selinux:
+    state: disabled
+
+- name: Load ip_vs
+  command: modprobe ip_vs
+
+- name: Clear iptables rule
+  shell: iptables -F && iptables -X && iptables -F -t nat && iptables -X -t nat
+
+- name: Output message
+  debug:
+    msg: "系统初始化完成......"

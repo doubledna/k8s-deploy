@@ -1,0 +1,7 @@
+---
+- import_tasks: copyFile.yml
+- import_tasks: installKubelet.yml
+- import_tasks: checkKubelet.yml
+- import_tasks: installKubeProxy.yml
+- import_tasks: checkKubeProxy.yml
+- import_tasks: checkIpvs.yml

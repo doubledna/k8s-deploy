@@ -1,0 +1,49 @@
+---
+- name: Delete old directory
+  file:
+    path: "{{ item }}" 
+    state: absent
+  with_items:
+    - "/var/lib/kubelet"
+    - "/var/lib/kube-proxy"
+    - "/etc/etcd"
+    - "/etc/docker"
+    - "/etc/flanneld"
+    - "/etc/kubernetes"
+    - "/var/lib/etcd"
+    - "/var/lib/docker"
+    - "{{ DOCKER_DATA_ROOT }}"
+    - "{{ USER_CONFIG_PATH }}"
+    - "{{ ROOT_CONFIG_PATH }}"
+    - "{{ KEY_PATH }}"
+    - "{{ ETCD_BASE_DIR }}"
+    - "{{ BIN_PATH }}"
+    - "{{ LOG_PATH }}"
+
+- name: Create directory required for the cluster
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0755
+    recurse: yes
+  with_items:
+    - "/tmp/kubernetes/"
+    - "/etc/docker"
+    - "/etc/etcd/cert"
+    - "/etc/flanneld/cert"
+    - "/etc/kubernetes/cert"
+    - "/var/lib/kubelet"
+    - "/var/lib/kube-proxy"
+    - "/var/lib/etcd"
+    - "/var/lib/docker"
+    - "{{ DOCKER_DATA_ROOT }}"
+    - "{{ USER_CONFIG_PATH }}"
+    - "{{ ROOT_CONFIG_PATH }}"
+    - "{{ KEY_PATH }}"
+    - "{{ ETCD_BASE_DIR }}"
+    - "{{ BIN_PATH }}"
+    - "{{ LOG_PATH }}"
+    - "{{ BINARY_FILE_PATH }}"
+

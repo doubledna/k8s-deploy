@@ -1,0 +1,11 @@
+[masters]
+kube-node1  ansible_ssh_host=10.0.0.2
+kube-node2  ansible_ssh_host=10.0.0.245
+kube-node3  ansible_ssh_host=10.0.0.246
+kube-node4  ansible_ssh_host=10.0.0.248
+
+
+[master]
+kube-node4
+
+

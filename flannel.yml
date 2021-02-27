@@ -1,0 +1,6 @@
+---
+- hosts: "flannel"
+  become: True
+  gather_facts: True
+  roles:
+    - "flannel"

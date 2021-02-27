@@ -1,0 +1,50 @@
+---
+- name: Copy cert config to ONCE_HOST
+  copy:
+    src: "files/{{ item}}"
+    dest: "{{ KEY_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "ca-config.json"
+    - "ca-csr.json"
+  when: 
+    - inventory_hostname == ONCE_HOST
+    - function == 'addCluster'
+
+- name: Create CA certificates
+  shell: "{{ BIN_PATH }}cfssl gencert -initca  ca-csr.json | {{ BIN_PATH }}cfssljson -bare ca"
+  args:
+    chdir: "{{ KEY_PATH }}"
+  when: 
+    - inventory_hostname == ONCE_HOST
+    - function == 'addCluster'
+
+- name: Set ca.key to 755 mode
+  file:
+    path: "{{ KEY_PATH }}"
+    mode: 0755
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    recurse: yes
+  when: 
+    - inventory_hostname == ONCE_HOST
+    - function == 'addCluster'
+
+- name: Copy ca certs and ca-config
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "/etc/kubernetes/cert/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "ca.pem"
+    - "ca-key.pem"
+    - "ca-config.json"
+
+- name: Output message
+  debug:
+    msg: "CA证书创建完成并下发到各个节点......"
+  when: inventory_hostname == ONCE_HOST

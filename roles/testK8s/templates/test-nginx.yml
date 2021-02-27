@@ -1,0 +1,35 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-nginx
+  labels:
+    app: test-nginx
+spec:
+  type: NodePort
+  selector:
+    app: test-nginx
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    nodePort: 38080
+
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: test-nginx
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  template:
+    metadata:
+      labels:
+        app: test-nginx
+    spec:
+      containers:
+      - name: test-nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80

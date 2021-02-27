@@ -1,0 +1,30 @@
+---
+- name: Copy config script
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ KEY_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0755
+  with_items:
+    - "kube-proxy-config.sh"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Exec kube-proxy script
+  script: "{{ KEY_PATH }}kube-proxy-config.sh"
+  args:
+    chdir: "{{ KEY_PATH }}"
+  when: inventory_hostname == ONCE_HOST
+
+- name: Chmod 0644 to kube-proxy.kubeconfig
+  file:
+    path: "{{ KEY_PATH }}kube-proxy.kubeconfig"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  when: inventory_hostname == ONCE_HOST
+
+- name: Show messages
+  debug:
+    msg: "kube-proxy kubeconfig配置完成......"
+  when: inventory_hostname == ONCE_HOST

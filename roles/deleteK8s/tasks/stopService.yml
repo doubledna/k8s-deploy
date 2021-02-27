@@ -1,0 +1,55 @@
+---
+- name: Stop node service
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+  with_items:
+    - "kubelet"
+    - "kube-proxy"
+    - "flanneld"
+    - "docker"
+  ignore_errors: yes
+
+- name: Stop master service
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+  with_items:
+    - "kube-apiserver"
+    - "kube-controller-manager"
+    - "kube-scheduler"
+    - "etcd"
+    - "flanneld"
+    - "nginx"
+  ignore_errors: yes
+
+- name: Uninstall docker
+  yum:
+    name: docker-ce
+    state: absent
+  ignore_errors: yes
+
+- name: Uninstall nginx
+  yum:
+    name: nginx
+    state: absent
+  ignore_errors: yes
+
+- name: Delete docker service
+  shell: "rm -rf /etc/systemd/system/docker.service"
+  ignore_errors: yes
+
+- name: Delete k8s systemd service
+  shell: "rm -rf /etc/systemd/system/kube*"
+  ignore_errors: yes
+
+- name: Delete etcd systemd service
+  shell: "rm -rf /etc/systemd/system/etcd-service"
+  ignore_errors: yes
+
+- name: Delete flanneld systemd service
+  shell: "rm -rf /etc/systemd/system/flanneld.service"
+  ignore_errors: yes
+
+- name: Reload system service
+  shell: systemctl daemon-reload

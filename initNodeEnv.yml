@@ -1,0 +1,6 @@
+---
+- hosts: "nodes"
+  become: True
+  gather_facts: True
+  roles:
+    - "initEnv"

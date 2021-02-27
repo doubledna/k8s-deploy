@@ -1,0 +1,21 @@
+---
+- name: Sleep 2 seconds
+  shell: "sleep 2"
+  
+- name: Check docker state
+  systemd:
+    name: docker 
+    state: started 
+
+- name: Check docker network info
+  shell: "ip addr | grep docker | grep inet"
+  register: result
+
+- name: show docker network info
+  debug: 
+    var: result.stdout 
+    verbosity: 0
+
+- name: Output message
+  debug:
+    msg: "Docker 安装完成......"

@@ -1,0 +1,6 @@
+---
+- hosts: "master"
+  become: True
+  gather_facts: True
+  roles:
+    - "kubectl"

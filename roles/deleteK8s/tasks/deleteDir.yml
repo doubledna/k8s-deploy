@@ -1,0 +1,25 @@
+---
+- name: delete folder
+  file:
+    path: "{{ item }}" 
+    state: absent
+  with_items:
+    - "/var/lib/kubelet"
+    - "/var/lib/kube-proxy"
+    - "/etc/etcd"
+    - "/etc/docker"
+    - "/etc/flanneld"
+    - "/etc/kubernetes"
+    - "/var/lib/etcd"
+    - "/var/lib/docker"
+    - "{{ DOCKER_DATA_ROOT }}"
+    - "{{ USER_CONFIG_PATH }}"
+    - "{{ ROOT_CONFIG_PATH }}"
+    - "{{ KEY_PATH }}"
+    - "{{ ETCD_BASE_DIR }}"
+    - "{{ BIN_PATH }}"
+    - "{{ LOG_PATH }}"
+    
+- name: Output message
+  debug:
+    msg: "k8s集群环境清理完成......"

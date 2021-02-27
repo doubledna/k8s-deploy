@@ -1,0 +1,30 @@
+[Unit]
+Description=Kubernetes Kubelet
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=docker.service
+Requires=docker.service
+
+[Service]
+WorkingDirectory=/var/lib/kubelet
+ExecStart={{ BIN_PATH }}kubelet \
+  --bootstrap-kubeconfig=/etc/kubernetes/kubelet-bootstrap.kubeconfig \
+  --cert-dir=/etc/kubernetes/cert \
+  --cni-conf-dir=/etc/cni/net.d \
+  --container-runtime=docker \
+  --container-runtime-endpoint=unix:///var/run/dockershim.sock \
+  --root-dir=/var/lib/kubelet \
+  --kubeconfig=/etc/kubernetes/kubelet.kubeconfig \
+  --config=/etc/kubernetes/kubelet-config.yaml \
+  --hostname-override={{ inventory_hostname }} \
+  --pod-infra-container-image={{ POD_INFRA_IMAGE }} \
+  --image-pull-progress-deadline=15m \
+  --volume-plugin-dir=/var/lib/kubelet/kubelet-plugins/volume/exec/ \
+  --logtostderr=false \
+  --log-dir={{ LOG_PATH }} \
+  --v=2
+Restart=always
+RestartSec=5
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target

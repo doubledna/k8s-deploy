@@ -1,0 +1,9 @@
+---
+- import_tasks: copyFile.yml
+- import_tasks: copyCa.yml
+  when: function == "addNode"
+- import_tasks: copyCert.yml
+- import_tasks: writePodNetwork.yml
+  when: function == "addCluster"
+- import_tasks: deployFlannel.yml
+- import_tasks: checkStatus.yml

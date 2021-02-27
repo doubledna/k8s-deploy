@@ -1,0 +1,22 @@
+---
+- name: Delete cluster rolebindding
+  shell: "{{ BIN_PATH }}kubectl delete clusterrolebinding kubelet-bootstrap"
+  ignore_errors: yes
+  when: inventory_hostname == ONCE_HOST
+
+- name: Create cluster rolebindding
+  shell: "{{ BIN_PATH }}kubectl create clusterrolebinding kubelet-bootstrap --clusterrole=system:node-bootstrapper --group=system:bootstrappers"
+  register: result
+  ignore_errors: yes
+  when: inventory_hostname == ONCE_HOST
+
+- name: Show cluster rolebingging info
+  debug: 
+    var: result.stdout 
+    verbosity: 0
+  when: inventory_hostname == ONCE_HOST
+
+- name: Output message
+  debug: 
+    msg: "kubernetes bootstrap kubeconfig配置完成......"
+  when: inventory_hostname == ONCE_HOST

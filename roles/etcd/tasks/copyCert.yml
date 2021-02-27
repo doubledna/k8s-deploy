@@ -1,0 +1,11 @@
+---
+- name: Copy etcd certs to etcd cluster
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "/etc/etcd/cert/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "etcd.pem"
+    - "etcd-key.pem"

@@ -1,0 +1,35 @@
+# For more information on configuration, see:
+#   * Official English Documentation: http://nginx.org/en/docs/
+#   * Official Russian Documentation: http://nginx.org/ru/docs/
+
+user nginx;
+worker_processes auto;
+error_log {{ LOG_PATH }}kube-nginx/error.log;
+pid /run/nginx.pid;
+
+# Load dynamic modules. See /usr/share/nginx/README.dynamic.
+
+events {
+    worker_connections 1024;
+}
+
+stream {
+    log_format proxy '$remote_addr [$time_local] '
+        '$protocol $status $bytes_sent $bytes_received '
+        '$session_time "$upstream_addr" '
+        '"$upstream_bytes_sent" "$upstream_bytes_received" "$upstream_connect_time"';
+
+    access_log {{ LOG_PATH }}kube-nginx/access.log proxy;
+    upstream backend {
+        hash $remote_addr consistent;
+        {% for ip in KUBE_API_LIST %}
+             server {{ ip }}    max_fails=3 fail_timeout=30s;
+        {% endfor %}
+    }
+
+    server {
+        listen {{ KUBE_API_VIP }};
+        proxy_connect_timeout 1s;
+        proxy_pass backend;
+    }
+}

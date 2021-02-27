@@ -1,0 +1,26 @@
+{
+    "CN": "system:kube-controller-manager",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "hosts": [
+    "127.0.0.1",
+    {% for ip in MASTER_HOSTS %}
+        {% if loop.index != loop.length %}
+            "{{ ip }}",
+        {% else %}
+            "{{ ip }}"
+        {% endif %}
+    {% endfor %}
+    ],
+    "names": [
+      {
+        "C": "CN",
+        "ST": "BeiJing",
+        "L": "BeiJing",
+        "O": "system:kube-controller-manager",
+        "OU": "dev"
+      }
+    ]
+}

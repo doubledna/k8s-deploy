@@ -1,0 +1,10 @@
+---
+- name: check ipvs
+  shell: "/usr/sbin/ipvsadm -ln" 
+  register: result
+
+- name: show check ipvs info
+  debug: 
+    var: result.stdout
+    verbosity: 0
+

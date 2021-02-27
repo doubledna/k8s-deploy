@@ -1,0 +1,5 @@
+---
+- import_tasks: copyFile.yml
+- import_tasks: copyCert.yml
+- import_tasks: deployEtcd.yml 
+- import_tasks: checkStatus.yml

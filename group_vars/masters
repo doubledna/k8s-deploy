@@ -1,0 +1,53 @@
+---
+# 安装k8s集群使用的变量
+# 执行ansible用户 #
+ansible_ssh_user: test
+CURRENT_USER: test
+
+# 组件版本 #
+K8S_VERSION: "v1.15.6"
+DNS_VERSION: "1.14.7"
+
+# 判断docker/yum源为国内还是国外 #
+IN_CHINA: "True"
+
+
+# 用于只需在一个主机上执行就ok的脚本 #
+ONCE_HOST: kube-node1
+
+
+# 搭建使用配置 #
+# master
+ENCRYPTION_KEY: "sy5iObZIMcBMceQN8sS/3rCtw41byeWvjxfIzSdIgAQ="
+CLUSTER_PORT_RANGE: "30000-39999"
+# 用于生成kubernetes-csr.json文件
+MASTER_HOSTS: ['10.0.0.2','10.0.0.245','10.0.0.246','10.0.0.248']
+KUBE_APISERVER: "https://10.0.0.2:7443"
+
+
+# 集群网络配置 #
+CLUSTER_IP_RANGE: "192.168.255.0/24"
+CLUSTER_API_SVC_IP: 192.168.255.1
+CLUSTER_DNS_SVC_IP: "192.168.255.2"
+CLUSTER_DNS_DOMAIN: "cluster.local."
+
+
+# 程序使用路径 #
+BIN_PATH: "/usr/local/kubernetes/bin/"
+KEY_PATH: "/data/apps/kubernetes/cert/"
+ROOT_CONFIG_PATH: "/root/.kube/"
+USER_CONFIG_PATH: "/home/test/.kube/"
+LOG_PATH: "/data/logs/kubernetes/"
+# 二进制文件存放目录
+BINARY_FILE_PATH: "/tmp/kubernetes/"
+
+
+# docker配置 #
+# docker数据目录
+DOCKER_DATA_ROOT: "/data/apps/docker"
+
+
+# etcd配置 #
+# etcd数据目录
+ETCD_BASE_DIR: /data/database/etcd
+ETCD_ENDPOINTS: "https://10.0.0.2:2379,https://10.0.0.245:2379,https://10.0.0.246:2379"

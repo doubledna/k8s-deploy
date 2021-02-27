@@ -1,0 +1,13 @@
+---
+- name: Copy csr-crb.yaml
+  template:
+    src: "csr-crb.yaml"
+    dest: "{{ KEY_PATH }}csr-crb.yaml"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  when: inventory_hostname == ONCE_HOST
+
+- name: Auto approve CSR
+  shell: "{{ BIN_PATH }}kubectl apply -f {{ KEY_PATH }}csr-crb.yaml"
+  when: inventory_hostname == ONCE_HOST

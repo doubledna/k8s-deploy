@@ -1,0 +1,7 @@
+---
+- hosts: "cluster"
+  become: True
+  gather_facts: False
+
+  roles:
+    - "generateCert"

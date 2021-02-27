@@ -1,0 +1,5 @@
+---
+- import_tasks: addRepo.yml
+- import_tasks: installDocker.yml
+- import_tasks: checkStatus.yml
+

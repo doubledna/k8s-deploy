@@ -1,0 +1,14 @@
+---
+- name: delete kubernetes certs to access kubelet api
+  command: "{{ BIN_PATH }}kubectl delete clusterrolebinding kube-apiserver:kubelet-apis"
+  when: inventory_hostname == ONCE_HOST
+  ignore_errors: yes
+  
+- name: create kubernetes certs to access kubelet api
+  command: "{{ BIN_PATH }}kubectl create clusterrolebinding kube-apiserver:kubelet-apis --clusterrole=system:kubelet-api-admin --user kubernetes"
+  when: inventory_hostname == ONCE_HOST
+  ignore_errors: yes
+
+- name: Output message
+  debug:
+    msg: "kube-apiserve安装完成......"

@@ -1,0 +1,62 @@
+---
+- name: Create kube-controller-manage config script
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ KEY_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "kube-controller-manager-config.sh"
+  when: 
+    - inventory_hostname == ONCE_HOST  
+    - function == "addCluster"
+
+- name: Exec script generate config file
+  script: "{{ KEY_PATH }}{{ item }}"
+  with_items:
+    - "kube-controller-manager-config.sh"
+  args:
+    chdir: "{{ KEY_PATH }}"
+  when: 
+    - inventory_hostname == ONCE_HOST  
+    - function == "addCluster"
+
+- name: Chmod 0644 kube-controller-manager.kubeconfig
+  file:
+    path: "{{ KEY_PATH }}{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "kube-controller-manager.kubeconfig"
+  when: 
+    - inventory_hostname == ONCE_HOST  
+    - function == "addCluster"
+
+- name: Copy kube-controller-manager.kubeconfig
+  copy:
+    src: "{{ KEY_PATH }}{{ item }}"
+    dest: "/etc/kubernetes/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+  with_items:
+    - "kube-controller-manager.kubeconfig"
+
+- name: Create kube-controller-manager service
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: "{{ CURRENT_USER }}"
+    group: "{{ CURRENT_USER }}"
+    mode: 0644
+  with_items:
+    - "kube-controller-manager.service"
+
+- name: Start kube-controller-manager
+  systemd:
+    name: "kube-controller-manager"
+    state: restarted
+    enabled: yes
+    daemon-reload: yes
+
